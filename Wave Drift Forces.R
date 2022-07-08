@@ -17,7 +17,7 @@ diam <- 12.5 #12.5 body diameter [m]
 draft <- 20 #20 body draft depth [m]
 n.floaters <- 3 #3 number of floaters [-]
 
-period <- 11 #wave period [seconds]
+period <- 31.7 #wave period [seconds]
 H <- 5 #design wave height [m]
 depth <- 1000 #1000 site water depth [m]
 
@@ -97,8 +97,8 @@ fn.F.drag <- function(x,t,diam,Hs,Pd,dr = draft) {
 
 #######################################################################
 # On One Floater
-F.inertia.v <- mapply(fn.F.inertia, x = 0, t = time.v)
-F.drag.v <- mapply(fn.F.drag, x = 0, t = time.v)
+F.inertia.v <- mapply(fn.F.inertia, x = 0, t = time.v, diam = diam,Hs = H, Pd = period)
+F.drag.v <- mapply(fn.F.drag, x = 0, t = time.v,diam = diam,Hs = H, Pd = period)
 F.total.v <- F.inertia.v + F.drag.v
 
 plot(x = time.v, y = F.inertia.v, type = 'l', col = 'blue', lty = 2, lwd = 2,
@@ -118,9 +118,11 @@ mean(F.total.v)
 # Calculate fluctuating intertia- and drag-induced wave force on three floaters
 # oriented in a 1-2 fashion
 dist <- 90.13 #distance between the front and rear floaters [m]
+H <- 5
+period <- 31.7
 
-F.inertia.front <- mapply(fn.F.inertia, x = 0, t = time.v, diam = 12.5, Hs = 4.2, Pd = 13)
-F.inertia.back <- mapply(fn.F.inertia, x = dist, t = time.v, diam = 12.5, Hs = 4.2, Pd = 13)
+F.inertia.front <- mapply(fn.F.inertia, x = 0, t = time.v, diam = 12.5, Hs = H, Pd = period)
+F.inertia.back <- mapply(fn.F.inertia, x = dist, t = time.v, diam = 12.5, Hs = H, Pd = period)
 
 F.inertia.v2 <- F.inertia.front + 2*F.inertia.back
 
@@ -282,6 +284,11 @@ Force.Matrix <- function(sig.ht = H, prd = period,
   return(data.frame(phi,Mean.Force,Max.Force))
 }
 
+Morro.period <- c(8,8.1,8.3,8.5,8.7,9.5,10,10.1,12.1,11.8,11.7,11.6,11.5,11.4,11.1,10.9,10.9,10.7,10.4,10.1,10.1,10.2,10.1,9.9,9.5,9.4,9.4,9.4,9.5,9.5,9.4,9.4,9.4,9.2,9.0,8.8,15.4,8.3,8.1,7.9,7.6,7.4,7.7,7.8,14.5,14.4,5.1,14.3)
+summary(Morro.period)
+Morro.ht <- c(1.8,1.7,1.6,1.6,1.6,1.6,1.5,1.3,1.5,1.5,1.4,1.4,1.5,1.4,1.4,1.3,1.3,1.3,1.3,1.2,1.2,1.1,1.1,1.2,1.2,1.2,1.1,1.0,1.1,1.1,1.2,1.2,1.2,1.1,1.0,1.0,1.0,1.1,1.1,1.2,0.9,0.9,0.9,0.9,0.9,0.9,0.9,1.0)
+summary(Morro.ht)
+
 #DLC 1.3
 Force.Matrix(sig.ht = 1.8, prd = 11) #[-44.9,50]
 Force.Matrix(sig.ht = 1.2, prd = 14.2) #[0.85,7.53]
@@ -289,3 +296,12 @@ Force.Matrix(sig.ht = 1.2, prd = 14.2) #[0.85,7.53]
 #DLC 6.1
 Force.Matrix(sig.ht = 3.2, prd = 18.3) #[8.2,10]
 Force.Matrix(sig.ht = 4.5, prd = 15.7) #[14.86,18.82]
+
+#additional Checks from Berg 2011
+Force.Matrix(sig.ht = 5, prd = 5.57) #[280.1, -396.63]
+Force.Matrix(sig.ht = 7, prd = 8.76) #[-221.87, 231.14]
+Force.Matrix(sig.ht = 9, prd = 12.18) #[-2.8, 172.35]
+Force.Matrix(sig.ht = 11.22, prd = 17.26) #[68.8, 79]
+Force.Matrix(sig.ht = 9, prd = 21.09) #[30.5, 32.4]
+Force.Matrix(sig.ht = 7, prd = 24.92) #[2.39, 2.44]
+Force.Matrix(sig.ht = 5, prd = 31.7) #[2, 2]
